@@ -1,0 +1,48 @@
+---
+- name: Ensure python OpenSSL dependencies are installed.
+  pip:
+    name: pyOpenSSL
+    state: present
+
+- name: Ensure directory exists for local self-signed TLS certs.
+  file:
+    path: "/etc/letsencrypt/live/{{ server_name }}"
+    state: directory
+  vars:
+    server_name: "{{ item.server_name.split(' ')[0] }}"
+
+  with_items: "{{ nginx_vhosts }}"
+
+- name: Generate an OpenSSL private key.
+  openssl_privatekey:
+    path: "/etc/letsencrypt/live/{{ server_name }}/privkey.pem"
+  vars:
+    server_name: "{{ item.server_name.split(' ')[0] }}"
+
+  with_items: "{{ nginx_vhosts }}"
+
+- name: Generate an OpenSSL CSR.
+  openssl_csr:
+    path: "/etc/ssl/private/{{ server_name }}.csr"
+    privatekey_path: "/etc/letsencrypt/live/{{ server_name }}/privkey.pem"
+    common_name: "{{ server_name }}"
+  vars:
+    server_name: "{{ item.server_name.split(' ')[0] }}"
+
+  with_items: "{{ nginx_vhosts }}"
+
+- name: Generate a Self Signed OpenSSL certificate.
+  openssl_certificate:
+    path: "/etc/letsencrypt/live/{{ server_name }}/fullchain.pem"
+    privatekey_path: "/etc/letsencrypt/live/{{ server_name }}/privkey.pem"
+    csr_path: "/etc/ssl/private/{{ server_name }}.csr"
+    provider: selfsigned
+  vars:
+    server_name: "{{ item.server_name.split(' ')[0] }}"
+
+  with_items: "{{ nginx_vhosts }}"
+
+- name: Generate OpenSSL Diffie-Hellman Parameters
+  openssl_dhparam:
+    path: /etc/ssl/certs/dhparam.pem
+    size: 2048

@@ -1,0 +1,27 @@
+---
+production: false
+
+deploy_path: "/home/vagrant/{{ project_name }}"
+
+mysql_users:
+   - name: user
+     host: '192\.168\.10\.1'
+     password: secret
+
+nginx_vhosts:
+  # backend
+  - server_name: "api.jerezfreecitytours.local admin.jerezfreecitytours.local"
+    root: "{{ deploy_path }}/backend/public"
+    index: "index.php"
+    error_log: "{{ nginx_logs_path }}/api.jerezfreecitytours.local.error"
+    access_log: "{{ nginx_logs_path }}/api.jerezfreecitytours.local.access"
+    extra_parameters: "{{ vhosts_type.symfony4 }}"
+
+  # frontend
+  - server_name: "www.jerezfreecitytours.local"
+    server_name_redirect: "jerezfreecitytours.local"
+    root: "{{ deploy_path }}/frontend/public"
+    index: "index.php"
+    error_log: "{{ nginx_logs_path }}/www.jerezfreecitytours.local.error"
+    error_log: "{{ nginx_logs_path }}/www.jerezfreecitytours.local.error"
+    extra_parameters: "{{ vhosts_type.symfony4 }}"

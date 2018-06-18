@@ -1,0 +1,15 @@
+---
+- name: resolve some hostname
+  command: "dig +short {{ server_name }}"
+  register: "resolved"
+
+- name: Certbot
+  import_role:
+    name: "geerlingguy.certbot"
+  vars:
+    certbot_certs:
+      - domains:
+        - "{{ server_name }}"
+        - "{{ server_name_redirect }}"
+  when:
+    - resolved.stdout != ""

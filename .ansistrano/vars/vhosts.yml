@@ -1,0 +1,28 @@
+---
+nginx_deploy_path_base: /var/local/www/jerezfreecitytours
+
+#nginx_vhosts:
+#  # api
+#  - server_name: "{{ server_names[ansible_hostname]['api'] }}"
+#    root: ""
+#    index: "index.php"
+#    error_log: "{{ nginx_logs_path }}/{{ server_names[ansible_hostname]['api'] }}.error"
+#    access_log: "{{ nginx_logs_path }}/{{ server_names[ansible_hostname]['api'] }}.access"
+#    extra_parameters: "{{ locations.symfony4 }}"
+#
+#  # admin
+#  - server_name: "admin.example.{{ domain }}"
+#    root: "{{ nginx_deploy_path_base }}/backend/public"
+#    index: "index.php"
+#    error_log: "{{ nginx_logs_path }}/api.example.{{ domain }}.error"
+#    access_log: "{{ nginx_logs_path }}/api.example.{{ domain }}.access"
+#    extra_parameters: "{{ locations.symfony4 }}"
+#
+#  # front
+#  - server_name: "www.example.{{ domain }}"
+#    server_name_redirect: "example.{{ domain }}"
+#    root: "{{ nginx_deploy_path_base }}/current/frontend/public"
+#    index: "index.php"
+#    error_log: "{{ nginx_logs_path }}/api.example.{{ domain }}.error"
+#    access_log: "{{ nginx_logs_path }}/api.example.{{ domain }}.access"
+#    extra_parameters: "{{ locations.symfony4 }}"

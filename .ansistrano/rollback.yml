@@ -1,0 +1,28 @@
+---
+- name: Rollback
+  hosts: all
+  become: yes
+
+  vars_files:
+    - vars/main.yml
+
+  tasks:
+    - name: deploy
+      become: yes
+      include_role:
+        name: carlosbuenosvinos.ansistrano-rollback
+
+      vars:
+        ansistrano_deploy_from: "{{ playbook_dir }}/../{{ item }}"
+        ansistrano_deploy_to: "{{ deploy_path }}/{{ item }}"
+        ansistrano_keep_releases: 5
+
+        # There seems to be an issue with rsync in vagrant
+        ansistrano_deploy_via: rsync
+
+      apply:
+        - become
+
+      with_items:
+        - backend
+        - frontend

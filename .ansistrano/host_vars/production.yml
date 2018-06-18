@@ -1,0 +1,23 @@
+---
+production: true
+
+deploy_path: "/var/local/www/{{ project_name }}"
+
+nginx_vhosts:
+  # backend
+  - server_name: "api.jerezfreecitytours.com admin.jerezfreecitytours.com"
+    root: "{{ deploy_path }}/backend/current/backend/public/"
+
+    index: "index.php"
+    error_log: "{{ nginx_logs_path }}/api.jerezfreecitytours.com.error"
+    access_log: "{{ nginx_logs_path }}/api.jerezfreecitytours.com.access"
+    extra_parameters: "{{ vhosts_type.symfony4 }}"
+
+  # frontend
+  - server_name: "www.jerezfreecitytours.com"
+    server_name_redirect: "jerezfreecitytours.com"
+    root: "{{ deploy_path }}/frontend/current/frontend/public/"
+    index: "index.php"
+    error_log: "{{ nginx_logs_path }}/www.jerezfreecitytours.com.error"
+    error_log: "{{ nginx_logs_path }}/www.jerezfreecitytours.com.error"
+    extra_parameters: "{{ vhosts_type.symfony4 }}"

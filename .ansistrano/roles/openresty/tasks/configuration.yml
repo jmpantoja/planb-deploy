@@ -1,0 +1,48 @@
+---
+
+- name: add openresty apt-key
+  apt_key:
+    url: https://openresty.org/package/pubkey.gpg
+    state: present
+
+
+- name: add openresty repository
+  apt_repository:
+    repo: "deb http://openresty.org/package/ubuntu bionic main"
+
+
+- name: packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    cache_valid_time: 3600
+    state: latest
+  with_items:
+    - software-properties-common
+    - openresty
+    - python3-pip
+
+
+- name: Ensure snippets dir exists
+  file:
+    path: "{{ nginx_ssl_conf_file_path | dirname }}"
+    state: directory
+    owner: "{{ nginx_user }}"
+    mode: 0755
+
+# Ssl setup.
+- name: Copy ssl configuration in place.
+  template:
+    src: "{{ nginx_ssl_conf_template }}"
+    dest: "{{ nginx_ssl_conf_file_path }}"
+    owner: root
+    group: "{{ root_group }}"
+    mode: 0644
+
+
+- name: Ensure logs dir exists
+  file:
+    path: "{{ nginx_logs_path }}"
+    state: directory
+    owner: "{{ nginx_user }}"
+    mode: 0755

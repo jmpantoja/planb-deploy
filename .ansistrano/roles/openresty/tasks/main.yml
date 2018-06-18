@@ -1,0 +1,37 @@
+---
+# Variable setup.
+- name: Include OS-specific variables.
+  include_vars: "Debian.yml"
+
+#
+# openresty install and configuration.
+- import_tasks: configuration.yml
+
+# Certificados (local)
+- include_tasks: selfsigned.yml
+  when: false == production | default(false)
+
+# Certificados
+- include_tasks: letsencrypt.yml
+  vars:
+    server_name: "{{ item.server_name.split(' ')[0] }}"
+    server_name_redirect: "{{ item.server_name_redirect  | default('') }}"
+  with_items: "{{ nginx_vhosts }}"
+  when: true == production | default(false)
+
+# Vhost configuration.
+- import_tasks: vhosts.yml
+
+# Nginx setup.
+- name: Copy nginx configuration in place.
+  template:
+    src: "{{ nginx_conf_template }}"
+    dest: "{{ nginx_conf_file_path }}"
+    owner: root
+    group: "{{ root_group }}"
+    mode: 0644
+  notify:
+    - reload nginx
+
+- name: Ensure nginx is started and enabled to start at boot.
+  service: name=openresty state=started enabled=yes

@@ -1,0 +1,39 @@
+---
+enviroments:
+  development:
+    name: development
+    primary: true
+    autostart: true
+    provider: "virtualbox"
+    box: "ubuntu/bionic64"
+    ip: <dev-ip>
+
+    memory: 512
+    cpus: 1
+
+    folders:
+      -
+        map: ./backend
+        to: /home/vagrant/jerezfreecitytours/backend
+      -
+        map: ./frontend
+        to: /home/vagrant/jerezfreecitytours/frontend
+
+  preproduction:
+    name: preproduction
+    provider: "virtualbox"
+    box: "ubuntu/bionic64"
+    ip: <pre-ip>
+
+    memory: 512
+    cpus: 1
+
+  production:
+    name: production
+    provider: "digital_ocean"
+    token: <digital_ocean_token>
+    image: "ubuntu-18-04-x64"
+    region: "lon1"
+    private_key_path: "~/.ssh/id_rsa"
+
+    size: "512mb"

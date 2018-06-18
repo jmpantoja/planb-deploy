@@ -1,0 +1,79 @@
+---
+
+#certbot
+certbot_create_if_missing: yes
+certbot_create_method: standalone
+certbot_admin_email: jmpantoja@gmail.com
+certbot_create_standalone_stop_services:
+  - openresty
+
+#pip
+pip_package: python3-pip
+
+#php
+php_version: '7.2'
+php_versions_install_recommends: no
+php_webserver_daemon: openresty
+php_enable_php_fpm: true
+php_enable_webserver: true
+
+#nginx
+nginx_worker_connections: 1024
+nginx_remove_default_vhost: true
+
+nginx_logs_path: /var/log/nginx
+
+vhosts_type:
+  symfony4: |
+    location ~ ^/index\.php(/|$) {
+        #fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+
+        # optionally set the value of the environment variables used in the application
+        # fastcgi_param APP_ENV prod;
+        # fastcgi_param APP_SECRET <app-secret-id>;
+        # fastcgi_param DATABASE_URL "mysql://db_user:db_pass@host:3306/db_name";
+
+        # When you are using symlinks to link the document root to the
+        # current version of your application, you should pass the real
+        # application path instead of the path to the symlink to PHP
+        # FPM.
+        # Otherwise, PHP's OPcache may not properly detect changes to
+        # your PHP files (see https://github.com/zendtech/ZendOptimizerPlus/issues/126
+        # for more information).
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        # Prevents URIs that include the front controller. This will 404:
+        # http://domain.tld/index.php/some-path
+        # Remove the internal directive to allow URIs like this
+        internal;
+    }
+
+    # return 404 for all other php files not matching the front controller
+    # this prevents access to other php files you don't want to be accessible.
+    location ~ \.php$ {
+        return 404;
+    }
+
+
+#firewall
+firewall_state: started
+firewall_enabled_at_boot: true
+firewall_disable_ufw: true
+
+firewall_allowed_tcp_ports:
+  - "22"
+  - "25"
+  - "80"
+  - "443"
+
+firewall_forwarded_tcp_ports:
+  - { src: "22", dest: "22" }
+  - { src: "25", dest: "25" }
+  - { src: "80", dest: "80" }
+  - { src: "443", dest: "443" }
+
+firewall_forwarded_udp_ports: []
